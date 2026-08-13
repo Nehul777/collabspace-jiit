@@ -1,5 +1,7 @@
 # JIIT Matchmaker 🚀
 
+🌐 **Live Demo:** [https://jiit-matchmaker.vercel.app](https://jiit-matchmaker.vercel.app)
+
 JIIT Matchmaker is a modern, high-performance web platform designed specifically for students at Jaypee Institute of Information Technology (JIIT). It acts as a collaborative hub where students can create profiles, pitch project ideas, and recruit teammates based on specific skills (e.g., C++, Next.js, Python) and hardware capabilities (e.g., RTX GPUs, MacBooks). 
 
 Built with a stunning "Cyber-Discord" neon aesthetic, the platform features glassmorphism UI, real-time threaded chat, and robust security.
