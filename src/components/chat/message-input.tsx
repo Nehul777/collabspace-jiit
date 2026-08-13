@@ -31,7 +31,7 @@ export function MessageInput({ roomId, userId, replyTo, onCancelReply, onOptimis
         room_id: roomId,
         user_id: userId,
         content: messageContent,
-        reply_to_id: replyTo?.id || null,
+        reply_to: replyTo?.id || null,
         created_at: new Date().toISOString(),
         isPending: true,
       });
@@ -45,7 +45,7 @@ export function MessageInput({ roomId, userId, replyTo, onCancelReply, onOptimis
         room_id: roomId,
         user_id: userId,
         content: messageContent,
-        reply_to_id: replyTo?.id || null,
+        reply_to: replyTo?.id || null,
       });
       
       if (error) throw error;

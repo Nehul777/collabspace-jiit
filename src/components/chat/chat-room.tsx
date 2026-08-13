@@ -97,7 +97,7 @@ export function ChatRoom({ roomId, userId }: ChatRoomProps) {
                 message={msg} 
                 isOwn={msg.user_id === userId}
                 onReply={setReplyTo}
-                replyTo={msg.reply_to_id ? messages.find(m => m.id === msg.reply_to_id) : null}
+                replyTo={msg.reply_to ? messages.find(m => m.id === msg.reply_to) : null}
               />
             ))}
           </div>
