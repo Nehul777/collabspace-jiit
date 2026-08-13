@@ -1,5 +1,6 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useNotifications } from '@/hooks/use-notifications';
 import { motion } from 'framer-motion';
 import { formatTimeAgo } from '@/lib/utils/matchmaking';
@@ -7,14 +8,20 @@ import { cn } from '@/lib/utils/cn';
 import { createClient } from '@/lib/supabase/client';
 
 export function NotificationList() {
+  const router = useRouter();
   const { notifications, markAsRead, markAllAsRead } = useNotifications();
   const supabase = createClient();
 
   const handleAction = async (notifId: string, action: 'accept' | 'decline') => {
-    // In a real app, you would call an RPC or update specific tables based on notification type.
-    // For now, just mark it as read.
     await markAsRead(notifId);
-    alert(`Action ${action} handled for notification ${notifId}`);
+    alert(`Action ${action} handled for notification.`);
+  };
+
+  const handleNotifClick = (notif: any) => {
+    if (!notif.is_read) markAsRead(notif.id);
+    if (notif.link) {
+      router.push(notif.link);
+    }
   };
 
   return (
@@ -47,7 +54,7 @@ export function NotificationList() {
                   "p-6 flex gap-4 transition-colors",
                   !notif.is_read ? "bg-accent/5" : "hover:bg-elevated/30"
                 )}
-                onClick={() => !notif.is_read && markAsRead(notif.id)}
+                onClick={() => handleNotifClick(notif)}
               >
                 <div className="mt-1">
                   {notif.type === 'JOIN_REQUEST' && <span className="text-xl">👋</span>}
