@@ -1,40 +1,67 @@
 import { notFound } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { ProjectDetailView } from '@/components/projects/project-detail-view';
 
-export default async function ProjectDetailPage({ params }: { params: { id: string } }) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await Promise.resolve(params);
+  const projectId = resolvedParams?.id;
+  if (!projectId) return notFound();
+
   const supabase = await createClient();
-  
+  const { data: { user } } = await supabase.auth.getUser();
+
   const { data: project } = await supabase
     .from('projects')
     .select(`
       *,
-      profiles:creator_id (
+      profiles:created_by (
         id, display_name, avatar_url
+      ),
+      project_members (
+        user_id, role,
+        profiles (id, display_name, avatar_url)
+      ),
+      project_required_skills (
+        skill_id,
+        skills (id, name)
+      ),
+      project_open_roles (
+        id, count, description,
+        roles (id, name)
       )
     `)
-    .eq('id', params.id)
+    .eq('id', projectId)
     .single();
 
   if (!project) {
     notFound();
   }
 
+  const currentUserId = user?.id || null;
+  const isOwner = currentUserId ? project.created_by === currentUserId : false;
+  const isMember = currentUserId
+    ? project.project_members?.some((m: any) => m.user_id === currentUserId)
+    : false;
+
+  let existingRequest = null;
+  if (currentUserId && !isOwner && !isMember) {
+    const { data: req } = await supabase
+      .from('join_requests')
+      .select('id, status')
+      .eq('project_id', projectId)
+      .eq('user_id', currentUserId)
+      .maybeSingle();
+
+    existingRequest = req;
+  }
+
   return (
-    <div className="max-w-5xl mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <div className="bg-bg-surface/30 border border-white/5 rounded-2xl p-8 backdrop-blur-sm">
-        <h1 className="text-4xl font-bold text-white mb-4">{project.title}</h1>
-        <div className="flex items-center gap-4 mb-8 text-sm text-gray-400">
-          <span className="text-accent">{project.status}</span>
-          <span>•</span>
-          <span>Created by {project.profiles?.display_name}</span>
-        </div>
-        
-        <div className="prose prose-invert max-w-none">
-          <p className="text-gray-300 leading-relaxed whitespace-pre-wrap">
-            {project.description}
-          </p>
-        </div>
-      </div>
-    </div>
+    <ProjectDetailView
+      project={project}
+      currentUserId={currentUserId}
+      isOwner={isOwner}
+      isMember={isMember}
+      existingRequest={existingRequest}
+    />
   );
 }

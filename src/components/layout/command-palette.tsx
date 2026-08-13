@@ -8,9 +8,9 @@ import { cn } from "@/lib/utils/cn";
 // Note: Assuming a basic Modal or rendering our own since it's a specific palette pattern
 const PALETTE_ITEMS = [
   { id: "home", label: "Go to Dashboard", icon: "🏠", group: "Navigation", shortcut: "G H", href: "/" },
-  { id: "pitches", label: "Go to Pitch Board", icon: "📋", group: "Navigation", shortcut: "G P", href: "/pitches" },
+  { id: "pitches", label: "Go to Pitch Board", icon: "📋", group: "Navigation", shortcut: "G P", href: "/" },
   { id: "students", label: "Find Students", icon: "🔍", group: "Navigation", shortcut: "G S", href: "/students" },
-  { id: "create-pitch", label: "Create New Pitch", icon: "✨", group: "Quick Actions", shortcut: "C P", href: "/pitches/new" },
+  { id: "create-pitch", label: "Create New Pitch", icon: "✨", group: "Quick Actions", shortcut: "C P", href: "/projects/new" },
   { id: "edit-profile", label: "Edit Profile", icon: "👤", group: "Quick Actions", shortcut: "E P", href: "/profile/edit" },
 ];
 

@@ -1,8 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useUser } from '@/hooks/use-user';
+import { createClient } from '@/lib/supabase/client';
+import { getOrCreateDirectChat } from '@/lib/utils/direct-chat';
 import { ChatSidebar } from '@/components/chat/chat-sidebar';
 import { ChatRoom } from '@/components/chat/chat-room';
 
@@ -10,13 +12,22 @@ function ChatContent() {
   const { user, loading } = useUser();
   const searchParams = useSearchParams();
   const roomParam = searchParams.get('room');
+  const userParam = searchParams.get('user');
   const [activeRoomId, setActiveRoomId] = useState<string | null>(roomParam);
+
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (roomParam) {
       setActiveRoomId(roomParam);
+    } else if (userParam && user) {
+      const resolveUserDm = async () => {
+        const roomId = await getOrCreateDirectChat(supabase, user.id, userParam);
+        if (roomId) setActiveRoomId(roomId);
+      };
+      resolveUserDm();
     }
-  }, [roomParam]);
+  }, [roomParam, userParam, user, supabase]);
 
   if (loading) return <div className="p-8 text-white/50">Loading...</div>;
   if (!user) return <div className="p-8 text-white/50">Please log in.</div>;

@@ -1,22 +1,10 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redirect, notFound } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 
-export default async function StudentProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = await params;
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+export default async function StudentProfilePage({ params }: { params: Promise<{ id: string }> | { id: string } }) {
+  const resolvedParams = await Promise.resolve(params);
+  const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -105,8 +93,8 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
             {profile.user_hardware?.length > 0 ? (
               profile.user_hardware.map((h: any) => (
                 <div key={h.id} className="flex items-center gap-4 bg-elevated border border-white/10 rounded-lg p-3">
-                  <span className="text-white font-medium">{h.type}</span>
-                  <span className="text-white/60 text-sm">{h.specs}</span>
+                  <span className="text-white font-medium">{h.label}</span>
+                  <span className="text-white/60 text-sm">{h.description}</span>
                 </div>
               ))
             ) : (
