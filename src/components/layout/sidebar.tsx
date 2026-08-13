@@ -6,11 +6,19 @@ import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils/cn";
 
-const NAV_ITEMS = [
+interface NavItem {
+  label: string;
+  href: string;
+  icon: string;
+  badge?: number;
+}
+
+const NAV_ITEMS: NavItem[] = [
   { label: "Pitch Board", href: "/", icon: "📋" },
   { label: "Find Students", href: "/students", icon: "🔍" },
+  { label: "Applications", href: "/applications", icon: "🙋" },
   { label: "Chat", href: "/chat", icon: "💬" },
-  { label: "Notifications", href: "/notifications", icon: "🔔", badge: 3 },
+  { label: "Notifications", href: "/notifications", icon: "🔔" },
   { label: "Profile", href: "/profile", icon: "👤" },
 ];
 
