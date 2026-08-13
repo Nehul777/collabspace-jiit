@@ -26,7 +26,7 @@ Built with a stunning "Cyber-Discord" neon aesthetic, the platform features glas
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/YOUR_GITHUB_USERNAME/jiit-matchmaker.git
+   git clone https://github.com/Nehul777/jiit-matchmaker.git
    cd jiit-matchmaker
    ```
 
