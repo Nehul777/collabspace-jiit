@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "JIIT Matchmaker | Find Your Dream Team",
+  title: "CollabSpace JIIT | Find Your Dream Team",
   description: "Connect with students, find teams, and build amazing projects together.",
 };
 

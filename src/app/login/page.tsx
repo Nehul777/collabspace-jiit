@@ -20,10 +20,10 @@ export default function LoginPage() {
         <div className="bg-[#0F1115]/80 backdrop-blur-xl border border-[rgba(255,255,255,0.08)] rounded-2xl p-8 shadow-2xl shadow-black/50">
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6366F1] to-purple-600 shadow-lg shadow-indigo-500/25 mb-6">
-              <span className="text-2xl font-bold text-white tracking-tighter">JM</span>
+              <span className="text-2xl font-bold text-white tracking-tighter">CJ</span>
             </div>
             <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-[#9CA3AF] mb-3 tracking-tight">
-              JIIT Matchmaker
+              CollabSpace JIIT
             </h1>
             <p className="text-[#9CA3AF] text-sm">
               Find your dream team for PBL & hackathons

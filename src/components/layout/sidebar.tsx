@@ -25,10 +25,10 @@ export function Sidebar({ userProfile }: { userProfile?: { display_name?: string
       <div className="h-14 flex items-center px-4 border-b border-[rgba(255,255,255,0.08)]">
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-tertiary flex items-center justify-center text-white font-bold text-sm shadow-[0_0_15px_var(--color-accent-glow)] group-hover:shadow-[0_0_25px_var(--color-accent-glow)] transition-shadow">
-            JM
+            CJ
           </div>
           <span className="font-semibold text-[#F3F4F6] tracking-tight group-hover:text-white transition-colors">
-            Matchmaker
+            CollabSpace
           </span>
         </Link>
       </div>
