@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useUser } from './use-user';
 import type { Database } from '@/lib/types/database';
@@ -9,7 +9,7 @@ export function useNotifications() {
   const { user } = useUser();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     if (!user) return;
@@ -55,11 +55,10 @@ export function useNotifications() {
           setNotifications((prev) =>
             prev.map((n) => (n.id === payload.new.id ? (payload.new as Notification) : n))
           );
-          setUnreadCount((prev) => {
-            const oldN = notifications.find((n) => n.id === payload.old.id);
-            if (oldN && !oldN.is_read && payload.new.is_read) return prev - 1;
-            return prev;
-          });
+          // Use functional update to avoid stale closure
+          if (payload.old && !payload.old.is_read && payload.new.is_read) {
+            setUnreadCount((prev) => Math.max(0, prev - 1));
+          }
         }
       )
       .subscribe();
@@ -84,3 +83,4 @@ export function useNotifications() {
 
   return { notifications, unreadCount, markAsRead, markAllAsRead };
 }
+

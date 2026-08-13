@@ -23,17 +23,42 @@ export function ProfileSetupWizard({ skills, roles }: { skills: Skill[], roles: 
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [hardware, setHardware] = useState<{name: string, specs: string}[]>([]);
   
-  const handleNext = () => setStep(s => Math.min(s + 1, 4));
-  const handleBack = () => setStep(s => Math.max(s - 1, 1));
+  const [error, setError] = useState<string | null>(null);
+
+  const handleNext = () => {
+    if (step === 1) {
+      if (!name.trim()) {
+        setError('Display Name is required.');
+        return;
+      }
+      if (!enrollmentNumber.trim()) {
+        setError('Enrollment Number is required.');
+        return;
+      }
+    }
+    setError(null);
+    setStep(s => Math.min(s + 1, 4));
+  };
+
+  const handleBack = () => {
+    setError(null);
+    setStep(s => Math.max(s - 1, 1));
+  };
   
   const handleComplete = async () => {
+    if (!name.trim() || !enrollmentNumber.trim()) {
+      setError('Display Name and Enrollment Number are required.');
+      setStep(1);
+      return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     await supabase.from('profiles').update({
-      display_name: name,
+      display_name: name.trim(),
       batch: batch,
-      enrollment_no: enrollmentNumber,
+      enrollment_no: enrollmentNumber.trim(),
     }).eq('id', user.id);
 
     if (selectedSkills.length > 0) {
@@ -49,9 +74,12 @@ export function ProfileSetupWizard({ skills, roles }: { skills: Skill[], roles: 
     }
     
     if (hardware.length > 0) {
-      await supabase.from('user_hardware').insert(
-        hardware.map(h => ({ user_id: user.id, type: h.name, specs: h.specs }))
-      );
+      const validHardware = hardware.filter(h => h.name.trim() !== '');
+      if (validHardware.length > 0) {
+        await supabase.from('user_hardware').insert(
+          validHardware.map(h => ({ user_id: user.id, label: h.name.trim(), description: h.specs.trim() }))
+        );
+      }
     }
 
     router.push('/');

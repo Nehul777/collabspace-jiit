@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 
@@ -11,7 +11,7 @@ type UseRealtimeProps = {
 
 export function useRealtime<T extends { [key: string]: any }>({ table, event, filter, schema = 'public' }: UseRealtimeProps) {
   const [payloads, setPayloads] = useState<RealtimePostgresChangesPayload<T>[]>([]);
-  const supabase = createClient();
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     let channel: RealtimeChannel;

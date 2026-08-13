@@ -1,20 +1,8 @@
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
+import { createClient } from '@/lib/supabase/server';
 
 export default async function ProfilePage() {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        get(name: string) {
-          return cookieStore.get(name)?.value;
-        },
-      },
-    }
-  );
+  const supabase = await createClient();
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
@@ -86,8 +74,8 @@ export default async function ProfilePage() {
           <div className="space-y-2">
             {profile?.user_hardware?.map((h: any) => (
               <div key={h.id} className="flex items-center gap-4 bg-elevated border border-white/10 rounded-lg p-3">
-                <span className="text-white font-medium">{h.type}</span>
-                <span className="text-white/60 text-sm">{h.specs}</span>
+                <span className="text-white font-medium">{h.label}</span>
+                <span className="text-white/60 text-sm">{h.description}</span>
               </div>
             )) || <p className="text-sm text-white/50">No hardware added.</p>}
           </div>

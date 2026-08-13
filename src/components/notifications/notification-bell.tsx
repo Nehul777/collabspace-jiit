@@ -62,7 +62,7 @@ export function NotificationBell() {
                       >
                         {!notif.is_read && <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 shrink-0" />}
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm text-white/90 font-medium mb-0.5 truncate">{notif.content}</p>
+                          <p className="text-sm text-white/90 font-medium mb-0.5 truncate">{notif.type.replace('_', ' ')}</p>
                           <p className="text-xs text-white/50 line-clamp-2">{notif.content}</p>
                           <span className="text-[10px] text-white/40 mt-1 block">{formatTimeAgo(notif.created_at)}</span>
                         </div>

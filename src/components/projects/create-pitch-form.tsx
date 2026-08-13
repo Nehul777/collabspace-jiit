@@ -24,8 +24,8 @@ export function CreatePitchForm() {
         title,
         description,
         max_members: maxMembers,
-        creator_id: userData.user.id,
-        status: 'Recruiting'
+        created_by: userData.user.id,
+        status: 'recruiting'
       }).select().single();
 
       if (error) throw error;
@@ -35,7 +35,6 @@ export function CreatePitchForm() {
         project_id: data.id,
         user_id: userData.user.id,
         role: 'Creator',
-        status: 'Approved'
       });
 
       router.push(`/projects/${data.id}`);

@@ -338,6 +338,29 @@ export interface Database {
           created_at?: string
         }
       }
+      direct_chats: {
+        Row: {
+          id: string
+          room_id: string
+          user1_id: string
+          user2_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          room_id: string
+          user1_id: string
+          user2_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          room_id?: string
+          user1_id?: string
+          user2_id?: string
+          created_at?: string
+        }
+      }
       messages: {
         Row: {
           id: string

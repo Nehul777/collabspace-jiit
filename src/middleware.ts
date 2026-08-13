@@ -32,7 +32,22 @@ export async function middleware(request: NextRequest) {
   );
 
   const { data: { user } } = await supabase.auth.getUser();
-  
+
+  const isLoginPage = request.nextUrl.pathname === '/login';
+  const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/callback');
+  const isPublicRoute = isLoginPage || isAuthCallback;
+
+  // Redirect unauthenticated users to login (except for public routes)
+  if (!user && !isPublicRoute) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  // Redirect authenticated users away from login page
+  if (user && isLoginPage) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Enforce mail.jiit.ac.in domain restriction
   if (user && user.email && !user.email.endsWith('@mail.jiit.ac.in')) {
     await supabase.auth.signOut();
     return NextResponse.redirect(new URL('/login?error=invalid_domain', request.url));

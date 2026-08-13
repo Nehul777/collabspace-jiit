@@ -9,7 +9,7 @@ export default async function DashboardPage() {
     .from('projects')
     .select(`
       *,
-      profiles:creator_id (
+      profiles:created_by (
         id, display_name, avatar_url
       )
     `)

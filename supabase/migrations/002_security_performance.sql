@@ -4,7 +4,23 @@
 -- 1. Security: Add missing DELETE policy for projects
 CREATE POLICY "Projects deletable by creator" ON public.projects FOR DELETE TO authenticated USING (auth.uid() = created_by);
 
--- 2. Concurrency: Safe Role Enrollment Function to prevent race conditions
+-- 2. Security: Ensure is_project_member helper function includes project creator
+CREATE OR REPLACE FUNCTION public.is_project_member(project_id UUID, user_id UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM public.project_members pm
+        WHERE pm.project_id = is_project_member.project_id
+        AND pm.user_id = is_project_member.user_id
+    ) OR EXISTS (
+        SELECT 1 FROM public.projects p
+        WHERE p.id = is_project_member.project_id
+        AND p.created_by = is_project_member.user_id
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 3. Concurrency: Safe Join Request Acceptance Function
 CREATE OR REPLACE FUNCTION accept_join_request(req_id UUID)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -12,47 +28,30 @@ SECURITY DEFINER
 AS $$
 DECLARE
     v_project_id UUID;
-    v_role_id UUID;
     v_user_id UUID;
-    v_filled INT;
-    v_required INT;
 BEGIN
     -- Get request details
-    SELECT project_id, role_id, user_id INTO v_project_id, v_role_id, v_user_id 
+    SELECT project_id, user_id INTO v_project_id, v_user_id 
     FROM public.join_requests 
-    WHERE id = req_id AND status = 'Pending';
+    WHERE id = req_id AND status = 'pending';
     
     IF v_project_id IS NULL THEN
         RETURN FALSE;
     END IF;
 
-    -- Lock the role row for update to prevent race conditions
-    SELECT filled_count, required_count INTO v_filled, v_required
-    FROM public.project_open_roles
-    WHERE id = v_role_id
-    FOR UPDATE;
-    
-    -- Check if there is still room
-    IF v_filled >= v_required THEN
-        -- Auto-reject since it's full
-        UPDATE public.join_requests SET status = 'Rejected' WHERE id = req_id;
-        RETURN FALSE;
-    END IF;
-
-    -- Update counts and insert member
-    UPDATE public.project_open_roles SET filled_count = filled_count + 1 WHERE id = v_role_id;
-    
-    INSERT INTO public.project_members (project_id, user_id, role_id, status)
-    VALUES (v_project_id, v_user_id, v_role_id, 'Active');
+    -- Insert member into project
+    INSERT INTO public.project_members (project_id, user_id, role)
+    VALUES (v_project_id, v_user_id, 'Member')
+    ON CONFLICT (project_id, user_id) DO NOTHING;
     
     -- Mark request as accepted
-    UPDATE public.join_requests SET status = 'Accepted' WHERE id = req_id;
+    UPDATE public.join_requests SET status = 'accepted' WHERE id = req_id;
     
     RETURN TRUE;
 END;
 $$;
 
--- 3. Performance: Indexes for Matchmaking Queries
+-- 4. Performance: Indexes for Matchmaking Queries
 -- Index on profiles for filtering by batch and enrollment_no
 CREATE INDEX IF NOT EXISTS idx_profiles_batch ON public.profiles(batch);
 CREATE INDEX IF NOT EXISTS idx_profiles_enrollment ON public.profiles(enrollment_no);
@@ -61,5 +60,6 @@ CREATE INDEX IF NOT EXISTS idx_profiles_enrollment ON public.profiles(enrollment
 CREATE INDEX IF NOT EXISTS idx_user_skills_skill_id ON public.user_skills(skill_id);
 CREATE INDEX IF NOT EXISTS idx_user_skills_user_id ON public.user_skills(user_id);
 
--- Index on project_skills for fast project filtering
-CREATE INDEX IF NOT EXISTS idx_project_skills_skill_id ON public.project_skills(skill_id);
+-- Index on project_required_skills for fast project filtering
+CREATE INDEX IF NOT EXISTS idx_project_required_skills_skill_id ON public.project_required_skills(skill_id);
+
