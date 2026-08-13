@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { getOrCreateDirectChat } from '@/lib/utils/direct-chat';
+import { useUser } from '@/hooks/use-user';
 import Link from 'next/link';
 
 interface StudentCardProps {
@@ -14,6 +15,9 @@ export function StudentCard({ student }: StudentCardProps) {
   const [loadingChat, setLoadingChat] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { user } = useUser();
+
+  const isOwnCard = user?.id === student.id;
 
   const skills = student.user_skills?.map((s: any) => s.skills) || [];
   const roles = student.user_roles?.map((r: any) => r.roles) || [];
@@ -21,22 +25,24 @@ export function StudentCard({ student }: StudentCardProps) {
   const handleMessage = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isOwnCard) return;
+
     setLoadingChat(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (!currentUser) {
         router.push('/login');
         return;
       }
 
-      if (user.id === student.id) {
+      if (currentUser.id === student.id) {
         alert("You cannot message yourself.");
         setLoadingChat(false);
         return;
       }
 
-      const roomId = await getOrCreateDirectChat(supabase, user.id, student.id);
+      const roomId = await getOrCreateDirectChat(supabase, currentUser.id, student.id);
       if (roomId) {
         router.push(`/chat?room=${roomId}`);
       } else {
@@ -56,7 +62,9 @@ export function StudentCard({ student }: StudentCardProps) {
           {student.display_name?.charAt(0) || 'U'}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all">{student.display_name}</h3>
+          <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all">
+            {student.display_name} {isOwnCard && <span className="text-xs text-accent font-normal">(You)</span>}
+          </h3>
           <p className="text-xs text-white/50 truncate">Batch {student.batch} • {student.enrollment_no}</p>
         </div>
       </div>
@@ -89,17 +97,28 @@ export function StudentCard({ student }: StudentCardProps) {
       </div>
 
       <div className="pt-4 mt-auto border-t border-white/5 flex items-center justify-between gap-2">
-        <button 
-          onClick={handleMessage}
-          disabled={loadingChat}
-          className="flex-1 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/20 hover:border-accent rounded-lg py-2 text-xs font-medium transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
-        >
-          <span>💬</span>
-          <span>{loadingChat ? 'Opening...' : 'Message'}</span>
-        </button>
-        <button className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors">
-          Invite
-        </button>
+        {isOwnCard ? (
+          <Link 
+            href="/profile" 
+            className="w-full text-center bg-white/5 hover:bg-white/10 text-white/70 border border-white/10 rounded-lg py-2 text-xs font-medium transition-colors"
+          >
+            👤 Your Profile
+          </Link>
+        ) : (
+          <>
+            <button 
+              onClick={handleMessage}
+              disabled={loadingChat}
+              className="flex-1 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/20 hover:border-accent rounded-lg py-2 text-xs font-medium transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+            >
+              <span>💬</span>
+              <span>{loadingChat ? 'Opening...' : 'Message'}</span>
+            </button>
+            <button className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors">
+              Invite
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
