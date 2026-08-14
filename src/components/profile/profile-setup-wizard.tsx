@@ -11,14 +11,15 @@ import type { Database } from '@/lib/types/database';
 type Skill = Database['public']['Tables']['skills']['Row'];
 type Role = Database['public']['Tables']['roles']['Row'];
 
-export function ProfileSetupWizard({ skills, roles }: { skills: Skill[], roles: Role[] }) {
+export function ProfileSetupWizard({ skills, roles, userEmail }: { skills: Skill[], roles: Role[], userEmail: string }) {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const supabase = createClient();
   
   const [name, setName] = useState('');
   const [batch, setBatch] = useState('2024');
-  const [enrollmentNumber, setEnrollmentNumber] = useState('');
+  const autoEnrollmentNumber = userEmail.split('@')[0];
+  const [enrollmentNumber, setEnrollmentNumber] = useState(autoEnrollmentNumber);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
   const [hardware, setHardware] = useState<{name: string, specs: string}[]>([]);
@@ -132,7 +133,8 @@ export function ProfileSetupWizard({ skills, roles }: { skills: Skill[], roles: 
                 </div>
                 <div>
                   <label className="block text-sm text-white/70 mb-1">Enrollment Number</label>
-                  <input type="text" value={enrollmentNumber} onChange={e => setEnrollmentNumber(e.target.value)} className="w-full bg-surface border border-white/10 rounded px-3 py-2 text-white" />
+                  <input type="text" value={enrollmentNumber} readOnly disabled className="w-full bg-surface border border-white/10 rounded px-3 py-2 text-white/50 cursor-not-allowed" />
+                  <p className="text-xs text-white/40 mt-1">Automatically extracted from your email.</p>
                 </div>
               </div>
             )}

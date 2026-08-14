@@ -20,7 +20,7 @@ export default async function SetupPage() {
 
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
-      <ProfileSetupWizard skills={skills || []} roles={roles || []} />
+      <ProfileSetupWizard skills={skills || []} roles={roles || []} userEmail={user.email || ''} />
     </div>
   );
 }

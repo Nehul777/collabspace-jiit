@@ -140,7 +140,7 @@ export function EditProfileForm({
           </div>
           <div>
             <label className="block text-sm text-white/70 mb-1">Enrollment Number</label>
-            <input type="text" value={enrollmentNumber} onChange={e => setEnrollmentNumber(e.target.value)} className="w-full bg-surface border border-white/10 focus:border-accent rounded-lg px-4 py-2 text-white outline-none transition-colors" />
+            <input type="text" value={enrollmentNumber} readOnly disabled className="w-full bg-surface border border-white/10 rounded-lg px-4 py-2 text-white/50 outline-none cursor-not-allowed" />
           </div>
         </div>
       </div>
