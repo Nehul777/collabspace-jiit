@@ -18,11 +18,11 @@ export default async function DashboardLayout({
   // Check if profile is fully set up
   const { data: profile } = await supabase
     .from("profiles")
-    .select("enrollment_no, display_name")
+    .select("batch, display_name")
     .eq("id", user.id)
     .single();
 
-  if (!profile?.enrollment_no) {
+  if (!profile?.batch) {
     redirect("/setup");
   }
 

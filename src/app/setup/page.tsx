@@ -10,8 +10,8 @@ export default async function SetupPage() {
     redirect('/login');
   }
 
-  const { data: profile } = await supabase.from('profiles').select('enrollment_no').eq('id', user.id).single();
-  if (profile?.enrollment_no) {
+  const { data: profile } = await supabase.from('profiles').select('batch').eq('id', user.id).single();
+  if (profile?.batch) {
     redirect('/dashboard');
   }
 
