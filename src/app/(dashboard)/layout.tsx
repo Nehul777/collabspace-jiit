@@ -1,7 +1,5 @@
 import React from "react";
-import { Sidebar } from "@/components/layout/sidebar";
-import { Header } from "@/components/layout/header";
-import { CommandPalette } from "@/components/layout/command-palette";
+import { DashboardLayoutClient } from "@/components/layout/dashboard-layout-client";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
@@ -29,17 +27,8 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex h-screen bg-[#08090A] text-[#F3F4F6] overflow-hidden">
-      <Sidebar userProfile={profile} />
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <Header />
-        <main className="flex-1 overflow-y-auto">
-          <div className="max-w-7xl mx-auto p-6 md:p-8">
-            {children}
-          </div>
-        </main>
-      </div>
-      <CommandPalette />
-    </div>
+    <DashboardLayoutClient userProfile={profile}>
+      {children}
+    </DashboardLayoutClient>
   );
 }

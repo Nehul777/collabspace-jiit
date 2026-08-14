@@ -22,16 +22,22 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Profile", href: "/profile", icon: "👤" },
 ];
 
-export function Sidebar({ userProfile }: { userProfile?: { display_name?: string | null } }) {
+interface SidebarProps {
+  userProfile?: { display_name?: string | null };
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
+}
+
+export function Sidebar({ userProfile, isMobileOpen, onMobileClose }: SidebarProps) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
-  return (
-    <aside className="w-[240px] flex-shrink-0 border-r border-[rgba(255,255,255,0.08)] bg-[#0F1115] flex flex-col h-screen sticky top-0">
-      <div className="h-14 flex items-center px-4 border-b border-[rgba(255,255,255,0.08)]">
-        <Link href="/" className="flex items-center gap-2 group">
+  const renderNavContent = () => (
+    <>
+      <div className="h-14 flex items-center justify-between px-4 border-b border-[rgba(255,255,255,0.08)] shrink-0">
+        <Link href="/" onClick={onMobileClose} className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-accent to-tertiary flex items-center justify-center text-white font-bold text-sm shadow-[0_0_15px_var(--color-accent-glow)] group-hover:shadow-[0_0_25px_var(--color-accent-glow)] transition-shadow">
             CJ
           </div>
@@ -39,18 +45,30 @@ export function Sidebar({ userProfile }: { userProfile?: { display_name?: string
             CollabSpace
           </span>
         </Link>
+
+        {/* Mobile close button */}
+        {onMobileClose && (
+          <button 
+            onClick={onMobileClose} 
+            className="md:hidden p-1.5 text-white/50 hover:text-white rounded-lg hover:bg-white/10"
+            aria-label="Close menu"
+          >
+            ✕
+          </button>
+        )}
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1">
+      <nav className="flex-1 overflow-y-auto py-4 px-2 space-y-1 custom-scrollbar">
         {NAV_ITEMS.map((item) => {
-          const isActive = mounted && (pathname === item.href || pathname?.startsWith(`${item.href}/`));
+          const isActive = mounted && (pathname === item.href || (item.href !== "/" && pathname?.startsWith(`${item.href}`)));
           
           return (
             <Link
               key={item.href}
               href={item.href}
+              onClick={onMobileClose}
               className={cn(
-                "relative flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200 group",
+                "relative flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group",
                 isActive 
                   ? "text-[#F3F4F6] bg-[#21242D]" 
                   : "text-[#9CA3AF] hover:text-[#F3F4F6] hover:bg-[#171920]"
@@ -64,7 +82,7 @@ export function Sidebar({ userProfile }: { userProfile?: { display_name?: string
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <span className="text-lg grayscale opacity-80 group-hover:grayscale-0 group-hover:opacity-100 transition-all">
+              <span className="text-lg opacity-80 group-hover:opacity-100 transition-all">
                 {item.icon}
               </span>
               <span className="font-medium">{item.label}</span>
@@ -79,12 +97,13 @@ export function Sidebar({ userProfile }: { userProfile?: { display_name?: string
         })}
       </nav>
 
-      <div className="p-4 border-t border-[rgba(255,255,255,0.08)]">
+      <div className="p-4 border-t border-[rgba(255,255,255,0.08)] shrink-0">
         <Link 
           href="/profile"
+          onClick={onMobileClose}
           className="flex items-center gap-3 p-2 rounded-lg hover:bg-[#171920] transition-colors group cursor-pointer"
         >
-          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-white font-medium shadow-inner">
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-gray-700 to-gray-600 flex items-center justify-center text-white font-medium shadow-inner shrink-0">
             {userProfile?.display_name ? userProfile.display_name.charAt(0).toUpperCase() : "U"}
           </div>
           <div className="flex flex-col flex-1 overflow-hidden">
@@ -95,12 +114,32 @@ export function Sidebar({ userProfile }: { userProfile?: { display_name?: string
               Settings & Account
             </span>
           </div>
-          <svg className="w-4 h-4 text-[#9CA3AF] group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
         </Link>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Fixed Sidebar */}
+      <aside className="hidden md:flex w-[240px] flex-shrink-0 border-r border-[rgba(255,255,255,0.08)] bg-[#0F1115] flex-col h-screen sticky top-0">
+        {renderNavContent()}
+      </aside>
+
+      {/* Mobile Slide-Over Drawer */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 md:hidden flex">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity" 
+            onClick={onMobileClose}
+          />
+          {/* Drawer container */}
+          <aside className="relative w-[270px] max-w-[80vw] bg-[#0F1115] border-r border-[rgba(255,255,255,0.08)] flex flex-col h-full z-50 shadow-2xl">
+            {renderNavContent()}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }
