@@ -39,6 +39,10 @@ export default function LoginPage() {
               </svg>
               Only @mail.jiit.ac.in accounts allowed
             </p>
+
+            <p className="text-center text-xs text-[#9CA3AF]/70 font-medium pt-4 border-t border-white/5">
+              For bugs or suggestions, contact <a href="mailto:nehuljajoo@gmail.com?subject=CollabSpace%20Feedback" className="text-accent hover:underline font-mono">nehuljajoo@gmail.com</a>
+            </p>
           </div>
         </div>
       </motion.div>

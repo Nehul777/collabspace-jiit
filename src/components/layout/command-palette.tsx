@@ -10,8 +10,10 @@ const PALETTE_ITEMS = [
   { id: "home", label: "Go to Dashboard", icon: "🏠", group: "Navigation", shortcut: "G H", href: "/" },
   { id: "pitches", label: "Go to Pitch Board", icon: "📋", group: "Navigation", shortcut: "G P", href: "/" },
   { id: "students", label: "Find Students", icon: "🔍", group: "Navigation", shortcut: "G S", href: "/students" },
+  { id: "applications", label: "Applications & Requests", icon: "🙋", group: "Navigation", shortcut: "G A", href: "/applications" },
   { id: "create-pitch", label: "Create New Pitch", icon: "✨", group: "Quick Actions", shortcut: "C P", href: "/projects/new" },
   { id: "edit-profile", label: "Edit Profile", icon: "👤", group: "Quick Actions", shortcut: "E P", href: "/profile/edit" },
+  { id: "contact-bugs", label: "Report Bugs / Suggestions (nehuljajoo@gmail.com)", icon: "🐛", group: "Support", shortcut: "B S", href: "mailto:nehuljajoo@gmail.com?subject=CollabSpace%20Feedback" },
 ];
 
 export function CommandPalette() {
@@ -75,7 +77,11 @@ export function CommandPalette() {
 
   const handleSelect = (item: typeof PALETTE_ITEMS[0]) => {
     setIsOpen(false);
-    router.push(item.href);
+    if (item.href.startsWith("mailto:")) {
+      window.location.href = item.href;
+    } else {
+      router.push(item.href);
+    }
   };
 
   return (

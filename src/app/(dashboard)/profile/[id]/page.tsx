@@ -23,19 +23,42 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
   }
 
   const isOwnProfile = user.id === resolvedParams.id;
+  const { data: currentUserProfile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
+  const currentUserIsAdmin = currentUserProfile?.is_admin || user.email === '992501030003@mail.jiit.ac.in';
+  const isTargetAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+  const canEditProfile = isOwnProfile || currentUserIsAdmin;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">{isOwnProfile ? "Your Profile" : `${profile.display_name}'s Profile`}</h1>
-          <p className="text-white/60">{isOwnProfile ? "Manage your skills, roles, and hardware." : "View student details and skills."}</p>
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold text-white">{isOwnProfile ? "Your Profile" : `${profile.display_name}'s Profile`}</h1>
+            {isTargetAdmin && (
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                <span>🛡️</span> Admin
+              </span>
+            )}
+          </div>
+          <p className="text-white/60 mt-1">{isOwnProfile ? "Manage your skills, roles, and hardware." : "View student details and skills."}</p>
         </div>
-        {!isOwnProfile && (
-          <Link href={`/chat?user=${profile.id}`} className="px-4 py-2 bg-accent hover:bg-accent/90 text-white rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
-            <span>💬</span> Message
-          </Link>
-        )}
+
+        <div className="flex items-center gap-3">
+          {!isOwnProfile && (
+            <Link href={`/chat?user=${profile.id}`} className="px-4 py-2 bg-accent hover:bg-accent/90 text-white rounded-lg transition-colors font-medium text-sm flex items-center gap-2">
+              <span>💬</span> Message
+            </Link>
+          )}
+
+          {canEditProfile && (
+            <Link 
+              href={isOwnProfile ? "/profile/edit" : `/profile/edit?targetId=${profile.id}`} 
+              className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors font-medium text-sm flex items-center gap-2 border border-white/10"
+            >
+              <span>✏️</span> {isOwnProfile ? "Edit Profile" : "Admin Edit Profile"}
+            </Link>
+          )}
+        </div>
       </div>
 
       <div className="bg-surface border border-white/5 rounded-2xl p-6 space-y-6">

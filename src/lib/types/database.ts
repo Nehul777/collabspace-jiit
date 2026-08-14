@@ -20,6 +20,7 @@ export interface Database {
           branch: string | null
           github_url: string | null
           linkedin_url: string | null
+          is_admin: boolean | null
           created_at: string
           updated_at: string
         }
@@ -28,6 +29,7 @@ export interface Database {
           display_name?: string | null
           avatar_url?: string | null
           bio?: string | null
+          is_admin?: boolean | null
           enrollment_no?: string | null
           batch?: string | null
           branch?: string | null

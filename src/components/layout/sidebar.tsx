@@ -97,6 +97,15 @@ export function Sidebar({ userProfile, isMobileOpen, onMobileClose }: SidebarPro
         })}
       </nav>
 
+      <div className="px-4 py-3 border-t border-[rgba(255,255,255,0.08)] bg-white/[0.02] text-xs text-[#9CA3AF] shrink-0 space-y-1">
+        <div className="font-medium text-white/80 flex items-center gap-1.5">
+          <span>🐛</span> Bugs & Suggestions?
+        </div>
+        <p className="text-[11px] leading-tight text-white/50">
+          Contact <a href="mailto:nehuljajoo@gmail.com?subject=CollabSpace%20Feedback" className="text-accent hover:underline font-mono">nehuljajoo@gmail.com</a>
+        </p>
+      </div>
+
       <div className="p-4 border-t border-[rgba(255,255,255,0.08)] shrink-0">
         <Link 
           href="/profile"

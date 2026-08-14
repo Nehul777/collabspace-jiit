@@ -6,7 +6,17 @@ import { createClient } from '@/lib/supabase/client';
 import { SkillSelector } from './skill-selector';
 import { RoleSelector } from './role-selector';
 
-export function EditProfileForm({ profile, allSkills, allRoles }: { profile: any, allSkills: any[], allRoles: any[] }) {
+export function EditProfileForm({ 
+  profile, 
+  allSkills, 
+  allRoles,
+  targetUserId
+}: { 
+  profile: any, 
+  allSkills: any[], 
+  allRoles: any[],
+  targetUserId?: string
+}) {
   const router = useRouter();
   const supabase = createClient();
   
@@ -33,49 +43,51 @@ export function EditProfileForm({ profile, allSkills, allRoles }: { profile: any
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    const editId = targetUserId || profile?.id || user.id;
+
     try {
       // 1. Update basic info
       const { error: profileError } = await supabase.from('profiles').update({
         display_name: name,
         batch: batch,
         enrollment_no: enrollmentNumber,
-      }).eq('id', user.id);
+      }).eq('id', editId);
       if (profileError) throw profileError;
 
       // 2. Update skills (delete old, insert new)
-      const { error: delSkillsErr } = await supabase.from('user_skills').delete().eq('user_id', user.id);
+      const { error: delSkillsErr } = await supabase.from('user_skills').delete().eq('user_id', editId);
       if (delSkillsErr) throw delSkillsErr;
       if (selectedSkills.length > 0) {
         const { error: insSkillsErr } = await supabase.from('user_skills').insert(
-          selectedSkills.map(id => ({ user_id: user.id, skill_id: id }))
+          selectedSkills.map(id => ({ user_id: editId, skill_id: id }))
         );
         if (insSkillsErr) throw insSkillsErr;
       }
 
       // 3. Update roles
-      const { error: delRolesErr } = await supabase.from('user_roles').delete().eq('user_id', user.id);
+      const { error: delRolesErr } = await supabase.from('user_roles').delete().eq('user_id', editId);
       if (delRolesErr) throw delRolesErr;
       if (selectedRoles.length > 0) {
         const { error: insRolesErr } = await supabase.from('user_roles').insert(
-          selectedRoles.map(id => ({ user_id: user.id, role_id: id }))
+          selectedRoles.map(id => ({ user_id: editId, role_id: id }))
         );
         if (insRolesErr) throw insRolesErr;
       }
 
       // 4. Update hardware (delete all, insert current)
-      const { error: delHwErr } = await supabase.from('user_hardware').delete().eq('user_id', user.id);
+      const { error: delHwErr } = await supabase.from('user_hardware').delete().eq('user_id', editId);
       if (delHwErr) throw delHwErr;
       if (hardware.length > 0) {
         const { error: insHwErr } = await supabase.from('user_hardware').insert(
-          hardware.map(h => ({ user_id: user.id, label: h.name, description: h.specs }))
+          hardware.map(h => ({ user_id: editId, label: h.name, description: h.specs }))
         );
         if (insHwErr) throw insHwErr;
       }
 
-      window.location.href = '/profile';
-    } catch (err) {
+      window.location.href = editId === user.id ? '/profile' : `/profile/${editId}`;
+    } catch (err: any) {
       console.error('Profile save failed:', err);
-      alert('Failed to save profile. Please try again.');
+      alert(err.message || 'Failed to save profile. Please try again.');
       setSaving(false);
     }
   };
