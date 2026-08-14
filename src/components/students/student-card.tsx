@@ -56,17 +56,18 @@ export function StudentCard({ student }: StudentCardProps) {
   };
 
   return (
-    <div className="glass-card neon-glow-hover p-5 flex flex-col gap-4 transition-all duration-300 group h-full relative overflow-hidden">
+    <div 
+      onClick={() => router.push(`/profile/${student.id}`)}
+      className="glass-card neon-glow-hover p-5 flex flex-col gap-4 transition-all duration-300 group h-full relative overflow-hidden cursor-pointer"
+    >
       <div className="flex items-start gap-4 z-10">
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-tertiary shadow-[0_0_15px_var(--color-accent-glow)] flex items-center justify-center text-lg font-bold text-white shrink-0">
           {student.display_name?.charAt(0) || 'U'}
         </div>
         <div className="flex-1 min-w-0">
-          <Link href={`/profile/${student.id}`} className="block group">
-            <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all inline-block">
-              {student.display_name} {isOwnCard && <span className="text-xs text-accent font-normal">(You)</span>}
-            </h3>
-          </Link>
+          <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all inline-block">
+            {student.display_name} {isOwnCard && <span className="text-xs text-accent font-normal">(You)</span>}
+          </h3>
           <p className="text-xs text-white/50 truncate">Batch {student.batch} • {student.enrollment_no}</p>
         </div>
       </div>
@@ -102,6 +103,7 @@ export function StudentCard({ student }: StudentCardProps) {
         {isOwnCard ? (
           <Link 
             href="/profile" 
+            onClick={(e) => e.stopPropagation()}
             className="w-full text-center bg-white/5 hover:bg-white/10 text-white/70 border border-white/10 rounded-lg py-2 text-xs font-medium transition-colors"
           >
             👤 Your Profile
@@ -116,7 +118,10 @@ export function StudentCard({ student }: StudentCardProps) {
               <span>💬</span>
               <span>{loadingChat ? 'Opening...' : 'Message'}</span>
             </button>
-            <button className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors">
+            <button 
+              onClick={(e) => e.stopPropagation()}
+              className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors"
+            >
               Invite
             </button>
           </>
