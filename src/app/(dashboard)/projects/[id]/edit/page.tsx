@@ -16,11 +16,19 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
   const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
   const isAdmin = profile?.is_admin === true;
 
-  const { data: project } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('id', projectId)
-    .single();
+  const [
+    { data: project },
+    { data: skills },
+    { data: roles },
+    { data: projectSkills },
+    { data: projectRoles }
+  ] = await Promise.all([
+    supabase.from('projects').select('*').eq('id', projectId).single(),
+    supabase.from('skills').select('*').order('name'),
+    supabase.from('roles').select('*').order('name'),
+    supabase.from('project_required_skills').select('skill_id').eq('project_id', projectId),
+    supabase.from('project_open_roles').select('role_id').eq('project_id', projectId)
+  ]);
 
   if (!project) {
     notFound();
@@ -39,7 +47,13 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
         <p className="text-white/50 text-sm">Update your project details or change its status.</p>
       </div>
 
-      <EditPitchForm project={project} />
+      <EditPitchForm 
+        project={project} 
+        allSkills={skills || []}
+        allRoles={roles || []}
+        selectedSkills={projectSkills?.map(s => s.skill_id) || []}
+        selectedRoles={projectRoles?.map(r => r.role_id) || []}
+      />
     </div>
   );
 }

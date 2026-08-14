@@ -51,8 +51,10 @@ export function PitchCard({ project, isMember }: any) {
         await supabase.from('notifications').insert({
           user_id: project.created_by,
           type: 'JOIN_REQUEST',
-          content: `Someone requested to join your project "${title}"`,
-          link: `/projects/${id}`,
+          data: {
+            message: `Someone requested to join your project "${title}"`,
+            link: `/projects/${id}`,
+          },
         });
       }
 

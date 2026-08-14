@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { SkillSelector } from '@/components/profile/skill-selector';
+import { RoleSelector } from '@/components/profile/role-selector';
+import { projectSchema } from '@/lib/validations/project';
 
 interface EditPitchFormProps {
   project: {
@@ -12,36 +15,71 @@ interface EditPitchFormProps {
     max_members: number;
     status: string;
   };
+  allSkills: any[];
+  allRoles: any[];
+  selectedSkills: string[];
+  selectedRoles: string[];
 }
 
-export function EditPitchForm({ project }: EditPitchFormProps) {
+export function EditPitchForm({ project, allSkills, allRoles, selectedSkills: initialSkills, selectedRoles: initialRoles }: EditPitchFormProps) {
   const router = useRouter();
   const supabase = createClient();
   const [title, setTitle] = useState(project.title || '');
   const [description, setDescription] = useState(project.description || '');
   const [maxMembers, setMaxMembers] = useState(project.max_members || 5);
   const [status, setStatus] = useState(project.status || 'recruiting');
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(initialSkills || []);
+  const [selectedRoles, setSelectedRoles] = useState<string[]>(initialRoles || []);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Zod Validation
+    const result = projectSchema.safeParse({
+      title,
+      description,
+      max_members: maxMembers,
+      skills: selectedSkills,
+      roles: selectedRoles,
+    });
+
+    if (!result.success) {
+      alert(result.error.errors[0].message);
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { error } = await supabase.from('projects').update({
-        title,
-        description,
-        max_members: maxMembers,
+        title: result.data.title,
+        description: result.data.description,
+        max_members: result.data.max_members,
         status: status
       }).eq('id', project.id);
 
       if (error) throw error;
       
+      // Update skills (Atomic)
+      const { error: skillsErr } = await supabase.rpc('update_project_skills', {
+        p_project_id: project.id,
+        p_skill_ids: result.data.skills
+      });
+      if (skillsErr) throw skillsErr;
+
+      // Update roles (Atomic)
+      const { error: rolesErr } = await supabase.rpc('update_project_roles', {
+        p_project_id: project.id,
+        p_role_ids: result.data.roles
+      });
+      if (rolesErr) throw rolesErr;
+
       router.push(`/projects/${project.id}`);
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error updating pitch:', error);
-      alert('Failed to update project.');
+      alert(error.message || 'Failed to update project.');
     } finally {
       setLoading(false);
     }
@@ -99,7 +137,7 @@ export function EditPitchForm({ project }: EditPitchFormProps) {
               max={20}
               className="w-full bg-elevated border border-white/10 rounded-md px-4 py-2 text-white focus:outline-none focus:border-accent transition-colors"
               value={maxMembers}
-              onChange={e => setMaxMembers(parseInt(e.target.value))}
+              onChange={e => setMaxMembers(parseInt(e.target.value) || 5)}
             />
           </div>
           <div>
@@ -114,6 +152,26 @@ export function EditPitchForm({ project }: EditPitchFormProps) {
               <option value="completed">Completed</option>
             </select>
           </div>
+        </div>
+
+        <div className="space-y-4 pt-4 border-t border-white/10">
+          <h3 className="text-lg font-medium text-white">Required Skills</h3>
+          <p className="text-sm text-white/50 mb-2">Select the technologies your team needs.</p>
+          <SkillSelector 
+            skills={allSkills} 
+            selectedSkills={selectedSkills} 
+            onChange={setSelectedSkills} 
+          />
+        </div>
+
+        <div className="space-y-4 pt-4 border-t border-white/10">
+          <h3 className="text-lg font-medium text-white">Open Roles</h3>
+          <p className="text-sm text-white/50 mb-2">What roles are you hiring for?</p>
+          <RoleSelector 
+            roles={allRoles} 
+            selectedRoles={selectedRoles} 
+            onChange={setSelectedRoles} 
+          />
         </div>
 
         <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-2">
