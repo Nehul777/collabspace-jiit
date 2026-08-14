@@ -26,7 +26,7 @@ export function DashboardLayoutClient({
           onToggleMobileSidebar={() => setMobileSidebarOpen(prev => !prev)}
         />
         <main className="flex-1 overflow-y-auto w-full">
-          <div className="max-w-7xl mx-auto p-4 sm:p-6 md:p-8 w-full overflow-x-hidden">
+          <div className="max-w-7xl mx-auto p-3 sm:p-6 md:p-8 w-full overflow-x-hidden">
             {children}
           </div>
         </main>

@@ -16,9 +16,10 @@ export function ProfileSetupWizard({ skills, roles, userEmail, userRealName }: {
   const router = useRouter();
   const supabase = createClient();
   
-  const [name, setName] = useState(userRealName);
-  const [batch, setBatch] = useState('2024');
   const autoEnrollmentNumber = userEmail.split('@')[0];
+  const fallbackName = userRealName || autoEnrollmentNumber;
+  const [name, setName] = useState(fallbackName);
+  const [batch, setBatch] = useState('2024');
   const [enrollmentNumber, setEnrollmentNumber] = useState(autoEnrollmentNumber);
   const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
   const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
@@ -115,6 +116,12 @@ export function ProfileSetupWizard({ skills, roles, userEmail, userRealName }: {
             transition={{ duration: 0.2 }}
             className="h-full"
           >
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-red-400 text-sm">
+                {error}
+              </div>
+            )}
+            
             {step === 1 && (
               <div className="space-y-4">
                 <div className="mb-6">

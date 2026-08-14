@@ -65,8 +65,8 @@ export function StudentDirectory({ initialStudents, allSkills, allRoles }: Stude
 
   return (
     <div className="space-y-6">
-      <div className="bg-surface border border-white/5 rounded-2xl p-4 flex flex-wrap gap-4 items-center sticky top-0 z-10 backdrop-blur-md bg-surface/80">
-        <div className="flex-1 min-w-[200px]">
+      <div className="bg-surface border border-white/5 rounded-2xl p-4 flex flex-col sm:flex-row gap-3 sm:gap-4 items-stretch sm:items-center sticky top-0 z-10 backdrop-blur-md bg-surface/80">
+        <div className="flex-1 w-full sm:w-auto">
           <input 
             type="text"
             placeholder="Search students..."
@@ -75,7 +75,7 @@ export function StudentDirectory({ initialStudents, allSkills, allRoles }: Stude
             className="w-full bg-elevated border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-accent"
           />
         </div>
-        <div className="w-40">
+        <div className="w-full sm:w-40">
           <select 
             value={batchFilter} 
             onChange={e => setBatchFilter(e.target.value)}

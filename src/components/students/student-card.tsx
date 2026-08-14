@@ -97,7 +97,7 @@ export function StudentCard({ student }: StudentCardProps) {
         )}
       </div>
 
-      <div className="pt-4 mt-auto border-t border-white/5 flex items-center justify-between gap-2">
+      <div className="pt-4 mt-auto border-t border-white/5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
         {isOwnCard ? (
           <button 
             onClick={(e) => {
@@ -114,7 +114,7 @@ export function StudentCard({ student }: StudentCardProps) {
             <button 
               onClick={handleMessage}
               disabled={loadingChat}
-              className="flex-1 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/20 hover:border-accent rounded-lg py-2 text-xs font-medium transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
+              className="flex-1 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/20 hover:border-accent rounded-lg py-2.5 sm:py-2 text-xs font-medium transition-all flex items-center justify-center gap-1.5 disabled:opacity-50"
             >
               <span>💬</span>
               <span>{loadingChat ? 'Opening...' : 'Message'}</span>
@@ -124,7 +124,7 @@ export function StudentCard({ student }: StudentCardProps) {
                 e.preventDefault();
                 e.stopPropagation();
               }}
-              className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors"
+              className="w-full sm:w-auto px-3 py-2.5 sm:py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors"
             >
               Invite
             </button>

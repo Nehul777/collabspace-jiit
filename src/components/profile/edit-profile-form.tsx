@@ -193,24 +193,24 @@ export function EditProfileForm({
         </div>
         
         {hardware.map((item, index) => (
-          <div key={index} className="flex gap-2">
+          <div key={index} className="flex flex-col sm:flex-row gap-2 relative">
             <input
               type="text"
               placeholder="E.g., Laptop, GPU"
               value={item.name}
               onChange={(e) => updateHardware(index, 'name', e.target.value)}
-              className="w-1/3 bg-surface border border-white/10 focus:border-accent rounded-lg px-3 py-2 text-white text-sm outline-none"
+              className="w-full sm:w-1/3 bg-surface border border-white/10 focus:border-accent rounded-lg px-3 py-2 text-white text-sm outline-none"
             />
             <input
               type="text"
               placeholder="E.g., M1 Mac 16GB, RTX 4090"
               value={item.specs}
               onChange={(e) => updateHardware(index, 'specs', e.target.value)}
-              className="flex-1 bg-surface border border-white/10 focus:border-accent rounded-lg px-3 py-2 text-white text-sm outline-none"
+              className="flex-1 bg-surface border border-white/10 focus:border-accent rounded-lg px-3 py-2 text-white text-sm outline-none pr-10"
             />
             <button 
               onClick={() => removeHardware(index)}
-              className="px-3 text-white/50 hover:text-red-400 transition-colors"
+              className="absolute right-2 top-1/2 -translate-y-1/2 sm:static sm:translate-y-0 px-3 text-white/50 hover:text-red-400 transition-colors bg-surface/80 sm:bg-transparent rounded-r-lg"
             >
               ✕
             </button>
