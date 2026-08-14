@@ -56,11 +56,9 @@ export function StudentCard({ student }: StudentCardProps) {
   };
 
   return (
-    <div 
-      onClick={() => router.push(`/profile/${student.id}`)}
-      className="glass-card neon-glow-hover p-5 flex flex-col gap-4 transition-all duration-300 group h-full relative overflow-hidden cursor-pointer"
-    >
-      <div className="flex items-start gap-4 z-10">
+    <Link href={`/profile/${student.id}`} className="block h-full outline-none group">
+      <div className="glass-card neon-glow-hover p-5 flex flex-col gap-4 transition-all duration-300 h-full relative overflow-hidden">
+        <div className="flex items-start gap-4 z-10">
         <div className="w-12 h-12 rounded-full bg-gradient-to-br from-accent to-tertiary shadow-[0_0_15px_var(--color-accent-glow)] flex items-center justify-center text-lg font-bold text-white shrink-0">
           {student.display_name?.charAt(0) || 'U'}
         </div>
@@ -101,13 +99,16 @@ export function StudentCard({ student }: StudentCardProps) {
 
       <div className="pt-4 mt-auto border-t border-white/5 flex items-center justify-between gap-2">
         {isOwnCard ? (
-          <Link 
-            href="/profile" 
-            onClick={(e) => e.stopPropagation()}
+          <button 
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              router.push('/profile');
+            }}
             className="w-full text-center bg-white/5 hover:bg-white/10 text-white/70 border border-white/10 rounded-lg py-2 text-xs font-medium transition-colors"
           >
             👤 Your Profile
-          </Link>
+          </button>
         ) : (
           <>
             <button 
@@ -119,7 +120,10 @@ export function StudentCard({ student }: StudentCardProps) {
               <span>{loadingChat ? 'Opening...' : 'Message'}</span>
             </button>
             <button 
-              onClick={(e) => e.stopPropagation()}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               className="px-3 py-2 rounded-lg bg-elevated hover:bg-white/10 border border-white/5 text-xs text-white/70 transition-colors"
             >
               Invite
@@ -128,6 +132,7 @@ export function StudentCard({ student }: StudentCardProps) {
         )}
       </div>
     </div>
+    </Link>
   );
 }
 
