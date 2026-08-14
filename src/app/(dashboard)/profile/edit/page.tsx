@@ -49,6 +49,7 @@ export default async function EditProfilePage({
         allSkills={allSkills || []} 
         allRoles={allRoles || []} 
         targetUserId={targetUserId}
+        isAdmin={isAdmin}
       />
     </div>
   );

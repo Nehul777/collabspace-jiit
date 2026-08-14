@@ -10,12 +10,14 @@ export function EditProfileForm({
   profile, 
   allSkills, 
   allRoles,
-  targetUserId
+  targetUserId,
+  isAdmin
 }: { 
   profile: any, 
   allSkills: any[], 
   allRoles: any[],
-  targetUserId?: string
+  targetUserId?: string,
+  isAdmin?: boolean
 }) {
   const router = useRouter();
   const supabase = createClient();
@@ -59,29 +61,34 @@ export function EditProfileForm({
       if (delSkillsErr) throw delSkillsErr;
       if (selectedSkills.length > 0) {
         const { error: insSkillsErr } = await supabase.from('user_skills').insert(
-          selectedSkills.map(id => ({ user_id: editId, skill_id: id }))
+          selectedSkills.map(skill_id => ({ user_id: editId, skill_id }))
         );
         if (insSkillsErr) throw insSkillsErr;
       }
 
-      // 3. Update roles
+      // 3. Update roles (delete old, insert new)
       const { error: delRolesErr } = await supabase.from('user_roles').delete().eq('user_id', editId);
       if (delRolesErr) throw delRolesErr;
       if (selectedRoles.length > 0) {
         const { error: insRolesErr } = await supabase.from('user_roles').insert(
-          selectedRoles.map(id => ({ user_id: editId, role_id: id }))
+          selectedRoles.map(role_id => ({ user_id: editId, role_id }))
         );
         if (insRolesErr) throw insRolesErr;
       }
 
-      // 4. Update hardware (delete all, insert current)
-      const { error: delHwErr } = await supabase.from('user_hardware').delete().eq('user_id', editId);
-      if (delHwErr) throw delHwErr;
-      if (hardware.length > 0) {
-        const { error: insHwErr } = await supabase.from('user_hardware').insert(
-          hardware.map(h => ({ user_id: editId, label: h.name, description: h.specs }))
+      // 4. Update hardware (delete old, insert new)
+      const { error: delHardwareErr } = await supabase.from('user_hardware').delete().eq('user_id', editId);
+      if (delHardwareErr) throw delHardwareErr;
+      const validHardware = hardware.filter(h => h.name.trim() && h.specs.trim());
+      if (validHardware.length > 0) {
+        const { error: insHardwareErr } = await supabase.from('user_hardware').insert(
+          validHardware.map(h => ({
+            user_id: editId,
+            label: h.name,
+            description: h.specs
+          }))
         );
-        if (insHwErr) throw insHwErr;
+        if (insHardwareErr) throw insHardwareErr;
       }
 
       window.location.href = editId === user.id ? '/profile' : `/profile/${editId}`;
@@ -124,7 +131,22 @@ export function EditProfileForm({
         <h3 className="text-lg font-medium text-white">Basic Information</h3>
         <div>
           <label className="block text-sm text-white/70 mb-1">Display Name</label>
-          <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-surface border border-white/10 focus:border-accent rounded-lg px-4 py-2 text-white outline-none transition-colors" />
+          {!isAdmin ? (
+            <div className="w-full bg-surface/50 border border-white/5 rounded-lg px-4 py-3 text-white/70 font-medium">
+              {name}
+              <p className="text-xs text-white/40 mt-1 font-normal">Your real name is permanently linked to your college email.</p>
+            </div>
+          ) : (
+            <>
+              <input 
+                type="text" 
+                value={name} 
+                onChange={e => setName(e.target.value)} 
+                className="w-full bg-surface border border-white/10 rounded-lg px-4 py-2 text-white focus:border-accent outline-none transition-colors" 
+              />
+              <p className="text-xs text-accent mt-1">Admin Mode: You can override this name.</p>
+            </>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>

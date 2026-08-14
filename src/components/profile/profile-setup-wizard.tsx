@@ -11,12 +11,12 @@ import type { Database } from '@/lib/types/database';
 type Skill = Database['public']['Tables']['skills']['Row'];
 type Role = Database['public']['Tables']['roles']['Row'];
 
-export function ProfileSetupWizard({ skills, roles, userEmail }: { skills: Skill[], roles: Role[], userEmail: string }) {
+export function ProfileSetupWizard({ skills, roles, userEmail, userRealName }: { skills: Skill[], roles: Role[], userEmail: string, userRealName: string }) {
   const [step, setStep] = useState(1);
   const router = useRouter();
   const supabase = createClient();
   
-  const [name, setName] = useState('');
+  const [name, setName] = useState(userRealName);
   const [batch, setBatch] = useState('2024');
   const autoEnrollmentNumber = userEmail.split('@')[0];
   const [enrollmentNumber, setEnrollmentNumber] = useState(autoEnrollmentNumber);
@@ -117,10 +117,9 @@ export function ProfileSetupWizard({ skills, roles, userEmail }: { skills: Skill
           >
             {step === 1 && (
               <div className="space-y-4">
-                <h2 className="text-xl font-medium mb-4">Basic Information</h2>
-                <div>
-                  <label className="block text-sm text-white/70 mb-1">Display Name</label>
-                  <input type="text" value={name} onChange={e => setName(e.target.value)} className="w-full bg-surface border border-white/10 rounded px-3 py-2 text-white" />
+                <div className="mb-6">
+                  <h2 className="text-2xl font-semibold text-white mb-2">Welcome, {userRealName}! 👋</h2>
+                  <p className="text-white/60 text-sm">Your name and enrollment number are automatically linked to your college email.</p>
                 </div>
                 <div>
                   <label className="block text-sm text-white/70 mb-1">Batch</label>

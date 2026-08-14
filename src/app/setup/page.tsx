@@ -18,9 +18,16 @@ export default async function SetupPage() {
   const { data: skills } = await supabase.from('skills').select('*').order('name');
   const { data: roles } = await supabase.from('roles').select('*').order('name');
 
+  const userRealName = user.user_metadata?.full_name || user.user_metadata?.name || '';
+
   return (
     <div className="min-h-screen bg-canvas flex items-center justify-center p-6">
-      <ProfileSetupWizard skills={skills || []} roles={roles || []} userEmail={user.email || ''} />
+      <ProfileSetupWizard 
+        skills={skills || []} 
+        roles={roles || []} 
+        userEmail={user.email || ''} 
+        userRealName={userRealName}
+      />
     </div>
   );
 }
