@@ -56,25 +56,19 @@ export function EditProfileForm({
       }).eq('id', editId);
       if (profileError) throw profileError;
 
-      // 2. Update skills (delete old, insert new)
-      const { error: delSkillsErr } = await supabase.from('user_skills').delete().eq('user_id', editId);
-      if (delSkillsErr) throw delSkillsErr;
-      if (selectedSkills.length > 0) {
-        const { error: insSkillsErr } = await supabase.from('user_skills').insert(
-          selectedSkills.map(skill_id => ({ user_id: editId, skill_id }))
-        );
-        if (insSkillsErr) throw insSkillsErr;
-      }
+      // 2. Update skills (Atomic)
+      const { error: skillsErr } = await supabase.rpc('update_user_skills', {
+        p_user_id: editId,
+        p_skill_ids: selectedSkills
+      });
+      if (skillsErr) throw skillsErr;
 
-      // 3. Update roles (delete old, insert new)
-      const { error: delRolesErr } = await supabase.from('user_roles').delete().eq('user_id', editId);
-      if (delRolesErr) throw delRolesErr;
-      if (selectedRoles.length > 0) {
-        const { error: insRolesErr } = await supabase.from('user_roles').insert(
-          selectedRoles.map(role_id => ({ user_id: editId, role_id }))
-        );
-        if (insRolesErr) throw insRolesErr;
-      }
+      // 3. Update roles (Atomic)
+      const { error: rolesErr } = await supabase.rpc('update_user_roles', {
+        p_user_id: editId,
+        p_role_ids: selectedRoles
+      });
+      if (rolesErr) throw rolesErr;
 
       // 4. Update hardware (delete old, insert new)
       const { error: delHardwareErr } = await supabase.from('user_hardware').delete().eq('user_id', editId);

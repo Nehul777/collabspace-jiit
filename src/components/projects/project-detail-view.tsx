@@ -63,8 +63,10 @@ export function ProjectDetailView({
         await supabase.from('notifications').insert({
           user_id: project.created_by,
           type: 'JOIN_REQUEST',
-          content: `Someone requested to join your project "${project.title}"`,
-          link: `/projects/${project.id}`,
+          data: {
+            message: `Someone requested to join your project "${project.title}"`,
+            link: `/projects/${project.id}`,
+          },
         });
       }
 
