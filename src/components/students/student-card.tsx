@@ -62,9 +62,11 @@ export function StudentCard({ student }: StudentCardProps) {
           {student.display_name?.charAt(0) || 'U'}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all">
-            {student.display_name} {isOwnCard && <span className="text-xs text-accent font-normal">(You)</span>}
-          </h3>
+          <Link href={`/profile/${student.id}`} className="block group">
+            <h3 className="font-semibold text-white truncate text-base group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-accent group-hover:to-tertiary transition-all inline-block">
+              {student.display_name} {isOwnCard && <span className="text-xs text-accent font-normal">(You)</span>}
+            </h3>
+          </Link>
           <p className="text-xs text-white/50 truncate">Batch {student.batch} • {student.enrollment_no}</p>
         </div>
       </div>
