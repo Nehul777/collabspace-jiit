@@ -16,7 +16,7 @@ export default async function ProfilePage() {
     user_hardware(*)
   `).eq('id', user.id).single();
 
-  const isAdmin = profile?.is_admin || user.email === '992501030003@mail.jiit.ac.in';
+  const isAdmin = profile?.is_admin === true;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-8">

@@ -13,8 +13,8 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
     redirect('/login');
   }
 
-  const { data: profile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
-  const isAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+  const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+  const isAdmin = profile?.is_admin === true;
 
   const { data: project } = await supabase
     .from('projects')

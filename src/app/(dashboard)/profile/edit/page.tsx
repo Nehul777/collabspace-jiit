@@ -18,8 +18,8 @@ export default async function EditProfilePage({
   }
 
   // Check if current user is admin
-  const { data: currentUserProfile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
-  const isAdmin = currentUserProfile?.is_admin || user.email === '992501030003@mail.jiit.ac.in';
+  const { data: currentUserProfile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+  const isAdmin = currentUserProfile?.is_admin === true;
 
   // Determine target user ID to edit
   let targetUserId = user.id;

@@ -12,8 +12,8 @@ export default async function ApplicationsPage() {
 
   let isAdmin = false;
   if (user) {
-    const { data: profile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
-    isAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+    const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+    isAdmin = profile?.is_admin === true;
   }
 
   return (

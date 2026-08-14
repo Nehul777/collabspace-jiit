@@ -45,8 +45,8 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   
   let isAdmin = false;
   if (currentUserId) {
-    const { data: profile } = await supabase.from('profiles').select('is_admin, email').eq('id', currentUserId).single();
-    isAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+    const { data: profile } = await supabase.from('profiles').select('is_admin').eq('id', currentUserId).single();
+    isAdmin = profile?.is_admin === true;
   }
 
   const isOwner = currentUserId ? (project.created_by === currentUserId || isAdmin) : false;

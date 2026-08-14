@@ -23,9 +23,9 @@ export default async function StudentProfilePage({ params }: { params: Promise<{
   }
 
   const isOwnProfile = user.id === resolvedParams.id;
-  const { data: currentUserProfile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
-  const currentUserIsAdmin = currentUserProfile?.is_admin || user.email === '992501030003@mail.jiit.ac.in';
-  const isTargetAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+  const { data: currentUserProfile } = await supabase.from('profiles').select('is_admin').eq('id', user.id).single();
+  const currentUserIsAdmin = currentUserProfile?.is_admin === true;
+  const isTargetAdmin = profile?.is_admin === true;
   const canEditProfile = isOwnProfile || currentUserIsAdmin;
 
   return (
