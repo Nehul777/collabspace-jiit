@@ -10,7 +10,7 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const { data: project } = await supabase
+  const { data: project, error: projectError } = await supabase
     .from('projects')
     .select(`
       *,
@@ -26,19 +26,30 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         skills (id, name)
       ),
       project_open_roles (
-        id, count, description,
+        id, count,
         roles (id, name)
       )
     `)
     .eq('id', projectId)
     .single();
 
+  if (projectError) {
+    console.error('Error fetching project:', projectError);
+  }
+
   if (!project) {
     notFound();
   }
 
   const currentUserId = user?.id || null;
-  const isOwner = currentUserId ? project.created_by === currentUserId : false;
+  
+  let isAdmin = false;
+  if (currentUserId) {
+    const { data: profile } = await supabase.from('profiles').select('is_admin, email').eq('id', currentUserId).single();
+    isAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+  }
+
+  const isOwner = currentUserId ? (project.created_by === currentUserId || isAdmin) : false;
   const isMember = currentUserId
     ? project.project_members?.some((m: any) => m.user_id === currentUserId)
     : false;

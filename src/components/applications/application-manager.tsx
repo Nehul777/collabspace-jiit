@@ -8,9 +8,10 @@ import { cn } from '@/lib/utils/cn';
 
 interface ApplicationManagerProps {
   userId: string;
+  isAdmin?: boolean;
 }
 
-export function ApplicationManager({ userId }: ApplicationManagerProps) {
+export function ApplicationManager({ userId, isAdmin = false }: ApplicationManagerProps) {
   const [activeTab, setActiveTab] = useState<'my-applications' | 'incoming-requests'>('my-applications');
   const [myApplications, setMyApplications] = useState<any[]>([]);
   const [incomingRequests, setIncomingRequests] = useState<any[]>([]);
@@ -49,11 +50,13 @@ export function ApplicationManager({ userId }: ApplicationManagerProps) {
       setMyApplications(myApps);
     }
 
-    // 2. Fetch projects created by me
-    const { data: myProjects } = await supabase
-      .from('projects')
-      .select('id, title')
-      .eq('created_by', userId);
+    // 2. Fetch projects (if admin, fetch all projects; if not, fetch projects created by me)
+    let myProjectsQuery = supabase.from('projects').select('id, title');
+    if (!isAdmin) {
+      myProjectsQuery = myProjectsQuery.eq('created_by', userId);
+    }
+    
+    const { data: myProjects } = await myProjectsQuery;
 
     if (myProjects && myProjects.length > 0) {
       const projectIds = myProjects.map(p => p.id);

@@ -162,8 +162,16 @@ export function ProjectDetailView({
             )}
 
             {isOwner && (
-              <div className="px-4 py-2.5 bg-accent/20 border border-accent/30 text-accent rounded-xl text-sm font-medium">
-                👑 Project Owner
+              <div className="flex items-center gap-3">
+                <div className="px-4 py-2.5 bg-accent/20 border border-accent/30 text-accent rounded-xl text-sm font-medium">
+                  👑 Project Owner
+                </div>
+                <Link 
+                  href={`/projects/${project.id}/edit`}
+                  className="px-4 py-2.5 bg-surface hover:bg-elevated text-white border border-white/10 rounded-xl text-sm font-medium transition-all"
+                >
+                  Edit Project
+                </Link>
               </div>
             )}
           </div>

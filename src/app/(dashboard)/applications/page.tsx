@@ -10,9 +10,15 @@ export default async function ApplicationsPage() {
     redirect('/login');
   }
 
+  let isAdmin = false;
+  if (user) {
+    const { data: profile } = await supabase.from('profiles').select('is_admin, email').eq('id', user.id).single();
+    isAdmin = profile?.is_admin || profile?.email === '992501030003@mail.jiit.ac.in';
+  }
+
   return (
     <div className="p-6 md:p-8 h-[calc(100vh-4rem)] overflow-y-auto">
-      <ApplicationManager userId={user.id} />
+      <ApplicationManager userId={user.id} isAdmin={isAdmin} />
     </div>
   );
 }
