@@ -45,7 +45,7 @@ export function EditPitchForm({ project, allSkills, allRoles, selectedSkills: in
     });
 
     if (!result.success) {
-      alert(result.error.errors[0].message);
+      alert(result.error.issues[0].message);
       return;
     }
 

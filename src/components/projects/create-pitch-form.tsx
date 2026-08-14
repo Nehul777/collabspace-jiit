@@ -35,7 +35,7 @@ export function CreatePitchForm({ allSkills, allRoles }: CreatePitchFormProps) {
     });
 
     if (!result.success) {
-      alert(result.error.errors[0].message);
+      alert(result.error.issues[0].message);
       return;
     }
 
