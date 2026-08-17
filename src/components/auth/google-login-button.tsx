@@ -69,6 +69,7 @@ export function GoogleLoginButton() {
         callback: handleCredentialResponse,
         auto_select: false,
         cancel_on_tap_outside: true,
+        hosted_domain: "mail.jiit.ac.in",
       });
 
       if (buttonRef.current) {
