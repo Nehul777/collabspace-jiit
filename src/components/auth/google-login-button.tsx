@@ -9,19 +9,32 @@ const GOOGLE_CLIENT_ID =
 export function GoogleLoginButton() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     setIsLoading(true);
     
-    // Use Google's Implicit Flow (returns id_token directly to the hash)
-    // This allows us to pass 'hd' to strictly lock the input UI to mail.jiit.ac.in
-    // AND it shows our own domain (collabspace-jiit.vercel.app) on the Google screen.
+    // Generate a raw nonce
+    const rawNonce = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    
+    // Hash the nonce with SHA-256 (this is what Supabase expects to be in the Google token)
+    const encoder = new TextEncoder();
+    const encoded = encoder.encode(rawNonce);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', encoded);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashedNonce = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+    // Store the RAW nonce to give to Supabase later
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("supabase_auth_nonce", rawNonce);
+    }
+
     const googleAuthUrl = new URL("https://accounts.google.com/o/oauth2/v2/auth");
     
     googleAuthUrl.searchParams.append("client_id", GOOGLE_CLIENT_ID);
     googleAuthUrl.searchParams.append("redirect_uri", `${window.location.origin}/auth/client-callback`);
     googleAuthUrl.searchParams.append("response_type", "id_token");
     googleAuthUrl.searchParams.append("scope", "email profile openid");
-    googleAuthUrl.searchParams.append("nonce", Math.random().toString(36).substring(2));
+    // Send the HASHED nonce to Google (Google puts this in the token)
+    googleAuthUrl.searchParams.append("nonce", hashedNonce);
     googleAuthUrl.searchParams.append("hd", "mail.jiit.ac.in");
     googleAuthUrl.searchParams.append("prompt", "select_account");
 

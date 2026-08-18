@@ -27,11 +27,18 @@ function ClientCallbackHandler() {
           return;
         }
 
+        // Retrieve the nonce we stored before redirecting
+        const nonce = window.localStorage.getItem("supabase_auth_nonce");
+
         const supabase = createClient();
         const { data, error: signInError } = await supabase.auth.signInWithIdToken({
           provider: "google",
           token: idToken,
+          nonce: nonce || undefined, // Provide the raw nonce so Supabase can hash it and match
         });
+
+        // Clean up the nonce
+        window.localStorage.removeItem("supabase_auth_nonce");
 
         if (signInError) throw signInError;
 
