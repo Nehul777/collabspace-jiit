@@ -62,4 +62,4 @@ If you want to contribute or continue building the platform, here are some great
 
 ## 🔒 Security
 
-This project employs strict Row Level Security (RLS) in PostgreSQL. Users can only edit their own profiles and pitches. Environment variables are strictly validated at build-time to prevent production crashes.
+This project employs strict Row Level Security (RLS) in PostgreSQL. Users can only edit their own profiles and pitches. Environment variables are strictly validated at build-time to prevent production crashes. hi nehul gajju here
