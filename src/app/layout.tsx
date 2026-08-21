@@ -29,6 +29,9 @@ export const metadata: Metadata = {
   description: "The exclusive platform for Jaypee Institute of Information Technology (JIIT) students to network, pitch project ideas, find teammates, and build amazing projects together.",
   keywords: ["JIIT", "CollabSpace", "Jaypee Institute of Information Technology", "Student Projects", "Hackathon Teams", "JIIT Noida", "Project Matchmaking"],
   authors: [{ name: "CollabSpace JIIT" }],
+  verification: {
+    google: "-YgkUBPW9ZAXMsU61gqEsZEJ9hefvr8lMnLx1iCkgrA",
+  },
   openGraph: {
     type: "website",
     locale: "en_IN",
