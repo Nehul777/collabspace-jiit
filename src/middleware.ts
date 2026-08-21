@@ -35,7 +35,8 @@ export async function middleware(request: NextRequest) {
 
   const isLoginPage = request.nextUrl.pathname === '/login';
   const isAuthCallback = request.nextUrl.pathname.startsWith('/auth/');
-  const isPublicRoute = isLoginPage || isAuthCallback;
+  const isSeoFile = request.nextUrl.pathname === '/sitemap.xml' || request.nextUrl.pathname === '/robots.txt';
+  const isPublicRoute = isLoginPage || isAuthCallback || isSeoFile;
 
   // Redirect unauthenticated users to login (except for public routes)
   if (!user && !isPublicRoute) {
